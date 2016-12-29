@@ -12,31 +12,73 @@ function linked_list() {
     this.current = null;
     this.count = 0;
 
-    this.add_list_item = function (data_payload) {
-        //create new object - set new_obj val to data_payload - set new object next to null
-        var node = new Node(data_payload);
-        /*if (!this.is_list_empty()) {
+    this.add_list_item = function (data_payload, add_to_beginning) {
+         /*if (!this.is_list_empty()) {
          this.current.next = node;
          } else {
-         this.head = node;
+         this.head = node;,
          }
          this.current = node;
 
          return ++this.count;*/
 
+        //create new object - set new_obj val to data_payload - set new object next to null
+        var node = new Node(data_payload);
         if (!this.head) {
-            // HEAD = new_obj - set current to new object
+            // HEAD = new_obj
             this.head = node;
-            this.current = node;
         } else {
-            //set current to new object - set current next to new object
-            node.next = this.current.next;
-            this.current.next = node;
-            this.current = node;
+            if (add_to_beginning) {
+                node.next = this.head;
+                this.head = node;
+            } else {
+                //set current to new object - set current next to new object
+                node.next = this.current.next;
+                this.current.next = node;
+            }
         }
+        this.current = node;
         //increment count returns count
         return ++this.count;
     };
+
+    //find a link list node based on either the value to look for, or a particular node to look for
+    this.find_item = function(item){
+        //determine if we are looking for an item directly, or an item's value
+        var value = item;
+        if (item instanceof Node) {
+            value = item.data;
+        }
+
+        //start looking at list from beginning
+        for (var i = 0, test = this.head; i < this.count; i++) {
+            //keep moving forward until either the end of the list
+            //or the item or value of item is found
+            if (test.data === value) {
+                //update current to point to the item (or the item that holds the value)
+                this.current = test;
+                //return node
+                return test;
+            }
+            test = test.next;
+        }
+
+        return null;
+    };
+
+    //completely empty the list
+    this.clear_list = function(){
+        //figure it out!
+        for (var i = 0, test = this.head; i < this.count; i++) {
+            this.current = test;
+            test = test.next;
+            this.current.next = null;
+        }
+        this.count = 0;
+        this.head = null;
+        this.current = null;
+    };
+
     //deletes the current list item
     this.delete_list_item = function () {
         //check if list is empty or not and take appropriate action
@@ -54,19 +96,19 @@ function linked_list() {
             for (var i = 0, test = this.head; i < this.count; i++) {
                 if (test.next === this.current) {
                     //found previous
+                    //set prev node's next value to the current node's next value
                     test.next = this.current.next;
                     this.current.next = null;
+                    //set the current to either prev or prev's next
                     this.current = test;
                     break;
                 }
             }
         }
 
-        return --this.count;
-        //set prev node's next value to the current node's next value
-        //set the current to either prev or prev's next
         //decrement count
         //return count
+        return --this.count;
     };
 
     this.get_current_value = function () {
@@ -128,7 +170,7 @@ console.log(list.get_next_value()); //returns 3
 console.log(list.get_current_value()); //returns 3
 console.log(list.get_next_value()); //returns 8
 console.log(list.get_next_value()); //returns false
-debugger;
+
 //PROBLEM SET 2
 console.log(list.rewind()); //returns true
 console.log(list.add_list_item(12)); //returns 4
